@@ -1,4 +1,4 @@
-name: Deploy to Fly.io
+name: Deploy to Render
 
 on:
   push:
@@ -26,16 +26,23 @@ jobs:
         run: |
           # npm run lint
           # npm run test
-          # npm run test:e2e  # Descomenta si tienes tests e2e
+          # npm run test:e2e
 
       - name: Build application
         run: npm run build
 
-      - name: Install Fly CLI
-        uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy to Fly.io
+      - name: Deploy to Render
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          flyctl deploy --remote-only
+          # Instalar CLI de Render (opcional)
+          curl -fsSL https://cli.render.com/install.sh | sh
+          
+          # Trigger deployment en Render
+          curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "clearCache": true
+            }'
