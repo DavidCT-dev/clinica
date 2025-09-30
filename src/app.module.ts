@@ -20,11 +20,9 @@ import { JwtModule } from '@nestjs/jwt';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const host = configService.get<string>('config.database.host');
-        const port = configService.get<number>('config.database.port');
         const dbName = configService.get<string>('config.database.name');
-        console.log(dbName, port, host)
         return {
-          uri: `mongodb://${host}:${port}/${dbName}`,
+          uri: `mongodb${host}/${dbName}`,
         };
       },
     }),
